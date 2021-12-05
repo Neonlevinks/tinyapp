@@ -7,6 +7,10 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
+
+app.set("view engine", "ejs");
+//Keep all sets above this line
+
 app.get("/", (req, res) => {
   res.send("Hello");
 });
