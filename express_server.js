@@ -11,6 +11,14 @@ app.get("/", (req, res) => {
   res.send("Hello");
 });
 
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+})
+
+
+
+
+//keep all GET requests above this line
 app.listen(PORT, () => {
   console.log(`Server is listening on Port ${PORT}`);
 })
