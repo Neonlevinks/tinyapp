@@ -13,7 +13,11 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-})
+});
+
+app.get("/hello", (req, res) => {
+  res.send("<html>Hello <b>World</b></html>\n")
+});
 
 
 
