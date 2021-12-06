@@ -19,6 +19,15 @@ app.set("view engine", "ejs");
 
 //Keep all sets above this line
 
+app.post("/urls", (req, res) => {
+  const newURL = generateRandomString();
+  urlDatabase[newURL] = req.body.longURL;
+  const templateVars = { shortURL: newURL, longURL: urlDatabase[newURL]};
+
+  res.redirect(`/urls/${newURL}`)
+});
+//keep all POST requests above this line
+
 app.get("/", (req, res) => {
   res.send("Hello");
 });
@@ -36,6 +45,12 @@ app.get("/urls/new", (req,res) => {
   res.render("urls_new");
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+
+  res.redirect(longURL);
+})
+
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]}
 
@@ -48,11 +63,6 @@ app.get("/hello", (req, res) => {
 
 //keep all GET requests above this line
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  res.send("OK");
-});
-//keep all POST requests above this line
 
 app.listen(PORT, () => {
   console.log(`Server is listening on Port ${PORT}`);
