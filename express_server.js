@@ -57,13 +57,15 @@ app.get("/urls", (req,res) => {
 });
 
 app.get("/urls/new", (req,res) => {
+  
   res.render("urls_new");
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const shortURL = req.params.shortURL;
+  longURL = urlDatabase[shortURL];
 
-  res.redirect(longURL);
+  res.redirect(`http://${String(longURL)}`);
 })
 
 app.get("/urls/:shortURL", (req, res) => {
