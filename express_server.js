@@ -1,6 +1,9 @@
 const express = require("express");
+const bodyParser = require("body-parser")
 const app = express();
 const PORT = 8080;
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -23,6 +26,10 @@ app.get("/urls.json", (req, res) => {
 app.get("/urls", (req,res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars)
+});
+
+app.get("/urls/new", (req,res) => {
+  res.render("urls_new");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
