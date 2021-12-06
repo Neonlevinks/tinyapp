@@ -1,9 +1,11 @@
 const express = require("express");
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080;
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -17,7 +19,7 @@ const generateRandomString = () => {
 
 app.set("view engine", "ejs");
 
-//Keep all sets above this line
+//Keep all sets and use above this line
 
 app.post("/urls", (req, res) => {
   const newURL = generateRandomString();
