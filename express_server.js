@@ -4,13 +4,32 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080;
 
+//keep all requirements above this line
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+
+//keep all app.use above this line
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xk": "http://www.google.com"
 };
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
+// keep all libraries above this line
 
 const generateRandomString = () => {
   const length = 6;
@@ -30,6 +49,20 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
 
+  res.redirect("/urls");
+});
+
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  users[userID] = {
+    id: userID,
+    email,
+    password
+  };
+
+  res.cookie('userID', userID)
   res.redirect("/urls");
 })
 
@@ -65,14 +98,19 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req,res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { 
+    urls: urlDatabase,
+    user: users[req.cookies["userID"]]
+  };
 
 
   res.render("urls_index", templateVars)
 });
 
 app.get("/urls/new", (req,res) => {
-  const templateVars = { username: req.cookies["username"]};
+  const templateVars = { 
+    user: users[req.cookies["userID"]]
+  };
 
 
   res.render("urls_new", templateVars);
@@ -89,14 +127,16 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL, 
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies["userID"]]
   }
 
   res.render("urls_show", templateVars);
 });
 
 app.get("/register", (req,res) => {
-  const templateVars = { username: req.cookies["username"]};
+  const templateVars = {
+    user: users[req.cookies["userID"]]
+  }
 
   res.render("register", templateVars);
 })
