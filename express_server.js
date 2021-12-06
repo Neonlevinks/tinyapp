@@ -10,6 +10,10 @@ const urlDatabase = {
   "9sm5xk": "http://www.google.com"
 };
 
+const generateRandomString = () => {
+  const length = 6;
+  return Math.random().toString(32).substr(2, length);
+}
 
 app.set("view engine", "ejs");
 
@@ -42,10 +46,14 @@ app.get("/hello", (req, res) => {
   res.send("<html>Hello <b>World</b></html>\n")
 });
 
-
-
-
 //keep all GET requests above this line
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("OK");
+});
+//keep all POST requests above this line
+
 app.listen(PORT, () => {
   console.log(`Server is listening on Port ${PORT}`);
 })
