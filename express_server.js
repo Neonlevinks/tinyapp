@@ -47,20 +47,33 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("userID");
 
   res.redirect("/urls");
 });
 
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
-  const email = req.body.email;
+  const inputEmail = req.body.email;
   const password = req.body.password;
+  if (!inputEmail || !password) {
+    res.statusCode = 400;
+    return res.redirect("/register");
+  }
+  
+  for (let user in users) {
+    if (inputEmail === users[user].email) {
+      res.statusCode = 400;
+      return res.redirect("/register");
+    }
+  }
+
   users[userID] = {
     id: userID,
-    email,
-    password
+    email: inputEmail,
+    password: password
   };
+
 
   res.cookie('userID', userID)
   res.redirect("/urls");
