@@ -41,9 +41,15 @@ app.set("view engine", "ejs");
 //Keep all sets and use above this line
 
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
-
-  res.redirect("/urls");
+  for (const user in users) {
+    if (users[user].email === req.body.email && users[user].password === req.body.password) {
+      res.cookie("userID", user);
+      res.redirect("/urls")
+    }
+  }
+  
+  res.statusCode = 403
+  res.redirect("/login");
 });
 
 app.post("/logout", (req, res) => {
@@ -105,6 +111,14 @@ app.post("/urls/:shortURL/update", (req ,res) => {
 app.get("/", (req, res) => {
   res.send("Hello");
 });
+
+app.get("/login", (req, res) => {
+  const templateVars = { 
+    user: users[req.cookies["userID"]]
+  };
+
+  res.render("login", templateVars);
+})
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
