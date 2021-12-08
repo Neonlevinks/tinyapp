@@ -36,6 +36,18 @@ const generateRandomString = () => {
   return Math.random().toString(32).substr(2, length);
 }
 
+const urlsForUser = (id) => {
+  let urls = {}; 
+  for (const url in urlDatabase) {
+    if (url.userID = id) {
+      urls[url] = url
+    }
+  }
+
+  return urls;
+}
+//keep helper functions above this line
+
 app.set("view engine", "ejs");
 
 //Keep all sets and use above this line
@@ -93,17 +105,28 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
+  for (const user in users) {
+    if (req.cookies["userID"] === user) {
+      const shortURL = req.params.shortURL;
+      delete urlDatabase[shortURL];
 
-  console.log(urlDatabase)
-  res.redirect("/urls");
+      return res.redirect("/urls");
+    }
+  }
+  
+  res.redirect("urls");
 });
 
 app.post("/urls/:shortURL/update", (req ,res) => {
+  for (const user in users) {
+    if (req.cookies["userID"] === user) {
+      const shortURL = req.params.shortURL;
+      urlDatabase[shortURL] = req.body.longURL;
+      res.redirect(`/urls/${shortURL}`)
+    }
+  }
+  
   const shortURL = req.params.shortURL;
-
-  urlDatabase[shortURL] = req.body.longURL
   res.redirect(`/urls/${shortURL}`)
 })
 //keep all POST requests above this line
@@ -125,13 +148,21 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req,res) => {
-  const templateVars = { 
-    urls: urlDatabase,
-    user: users[req.cookies["userID"]]
-  };
+  for (const user in users) {
+    if (req.cookies["userID"] === user) {
+      const templateVars = { 
+        urls: urlsForUser(req.cookies["userID"]),
+        user: users[req.cookies["userID"]]
+      };
+      return res.render("urls_index", templateVars)
+    }
+  }
 
-
-  res.render("urls_index", templateVars)
+  const templateVars = {
+    urls: null,
+    user: null
+  }
+  res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req,res) => {
@@ -155,10 +186,21 @@ app.get("/u/:shortURL", (req, res) => {
 })
 
 app.get("/urls/:shortURL", (req, res) => {
+  for (const user in users) {
+    if (req.cookies["userID"] === user) {
+      const templateVars = {
+        shortURL: req.params.shortURL, 
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        user: users[req.cookies["userID"]]
+      }
+    
+      return res.render("urls_show", templateVars);
+    }
+  }
+  
   const templateVars = {
-    shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user: users[req.cookies["userID"]]
+    shortURL: "Please Log In First",
+    longURL:null
   }
 
   res.render("urls_show", templateVars);
