@@ -12,8 +12,8 @@ app.use(cookieParser());
 //keep all app.use above this line
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xk": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
+  "9sm5xk": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
 
 const users = {
@@ -139,21 +139,25 @@ app.get("/urls/new", (req,res) => {
     user: users[req.cookies["userID"]]
   };
 
+  if (!templateVars.user) {
+    res.redirect("/login");
+  } 
+
 
   res.render("urls_new", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  longURL = urlDatabase[shortURL];
+  longURL = urlDatabase[shortURL].longURL;
 
-  res.redirect(`http://${String(longURL)}`);
+  res.redirect(`${String(longURL)}`);
 })
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL, 
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: users[req.cookies["userID"]]
   }
 
