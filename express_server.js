@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const app = express();
 const PORT = 8080;
-
+const bcrypt = require('bcrypt');
 //keep all requirements above this line
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -54,7 +54,7 @@ app.set("view engine", "ejs");
 
 app.post("/login", (req, res) => {
   for (const user in users) {
-    if (users[user].email === req.body.email && users[user].password === req.body.password) {
+    if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].hashedPassword)) {
       res.cookie("userID", user);
       res.redirect("/urls")
     }
@@ -74,6 +74,8 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const inputEmail = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
   if (!inputEmail || !password) {
     res.statusCode = 400;
     return res.redirect("/register");
@@ -89,7 +91,7 @@ app.post("/register", (req, res) => {
   users[userID] = {
     id: userID,
     email: inputEmail,
-    password: password
+    hashedPassword: hashedPassword
   };
 
 
