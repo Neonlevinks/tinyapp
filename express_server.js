@@ -15,8 +15,6 @@ app.use(cookieSession({
 //keep all app.use above this line
 
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
-  "9sm5xk": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
 
 const users = {
@@ -39,7 +37,7 @@ const generateRandomString = () => {
   return Math.random().toString(32).substr(2, length);
 }
 
-const urlsForUser = (id) => {
+const urlsForUser = (id) => {//fetch all urls saved for a user
   let urls = {}; 
   for (const url in urlDatabase) {
     if (url.userID = id) {
@@ -55,7 +53,7 @@ app.set("view engine", "ejs");
 
 //Keep all sets and use above this line
 
-app.post("/login", (req, res) => {
+app.post("/login", (req, res) => {//when pushing login button, if user matches key in database, and password matches, return urls of the user
   for (const user in users) {
     if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].hashedPassword)) {
       req.session.userID = `${user}`;
@@ -67,13 +65,13 @@ app.post("/login", (req, res) => {
   res.redirect("/login");
 });
 
-app.post("/logout", (req, res) => {
+app.post("/logout", (req, res) => {//on logout  button press, clear session and direct to home page
   req.session = null;
   
   res.redirect("/urls");
 });
 
-app.post("/register", (req, res) => {
+app.post("/register", (req, res) => {//on button press, add user to database
   const userID = generateRandomString();
   const inputEmail = req.body.email;
   const password = req.body.password;
@@ -102,14 +100,14 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 })
 
-app.post("/urls", (req, res) => {
+app.post("/urls", (req, res) => {//create a new url entry in the database
   const newURL = generateRandomString();
   urlDatabase[newURL] = req.body.longURL;
   
   res.redirect(`/urls/${newURL}`)
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.post("/urls/:shortURL/delete", (req, res) => {//delete url entry from database
   for (const user in users) {
     if (req.session.userID === user) {
       const shortURL = req.params.shortURL;
@@ -122,7 +120,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("urls");
 });
 
-app.post("/urls/:shortURL/update", (req ,res) => {
+app.post("/urls/:shortURL/update", (req ,res) => {//updates the longURL belonging to a shortURL
   for (const user in users) {
     if (req.session.userID === user) {
       const shortURL = req.params.shortURL;
@@ -136,11 +134,11 @@ app.post("/urls/:shortURL/update", (req ,res) => {
 })
 //keep all POST requests above this line
 
-app.get("/", (req, res) => {
+app.get("/", (req, res) => {//check if server works
   res.send("Hello");
 });
 
-app.get("/login", (req, res) => {
+app.get("/login", (req, res) => {//get login form page
   const templateVars = { 
     user: users[req.session.userID]
   };
@@ -148,11 +146,11 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 })
 
-app.get("/urls.json", (req, res) => {
+app.get("/urls.json", (req, res) => {//json file for users urls
   res.json(urlDatabase);
 });
 
-app.get("/urls", (req,res) => {
+app.get("/urls", (req,res) => {// get list of urls for logged in user
   for (const user in users) {
     if (req.session.userID === user) {
       const templateVars = { 
@@ -170,7 +168,7 @@ app.get("/urls", (req,res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/new", (req,res) => {
+app.get("/urls/new", (req,res) => {//get page for creating new url
   const templateVars = { 
     user: users[req.session.userID]
   };
@@ -183,14 +181,15 @@ app.get("/urls/new", (req,res) => {
   res.render("urls_new", templateVars);
 });
 
-app.get("/u/:shortURL", (req, res) => {
+app.get("/u/:shortURL", (req, res) => {//redirect to long url value for short url key
   const shortURL = req.params.shortURL;
-  longURL = urlDatabase[shortURL].longURL;
-
-  res.redirect(`${String(longURL)}`);
+  const longURL = urlDatabase[shortURL];
+  if (shortURL) {
+    return res.redirect(`https://${longURL}`);
+  }
 })
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
   for (const user in users) {
     if (req.session.userID === user) {
       const templateVars = {
@@ -200,6 +199,8 @@ app.get("/urls/:shortURL", (req, res) => {
       }
     
       return res.render("urls_show", templateVars);
+    } else {
+      res.redirect("/login")
     }
   }
   
@@ -211,7 +212,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/register", (req,res) => {
+app.get("/register", (req,res) => {//get register form page
   const templateVars = {
     user: users[req.session.userID]
   }
@@ -219,7 +220,7 @@ app.get("/register", (req,res) => {
   res.render("register", templateVars);
 })
 
-app.get("/hello", (req, res) => {
+app.get("/hello", (req, res) => {//test page
   res.send("<html>Hello <b>World</b></html>\n")
 });
 
@@ -228,6 +229,6 @@ app.get("/hello", (req, res) => {
 
 
 
-app.listen(PORT, () => {
+app.listen(PORT, () => {//have server listen 
   console.log(`Server is listening on Port ${PORT}`);
 })
