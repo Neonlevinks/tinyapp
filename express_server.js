@@ -28,25 +28,25 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 
 // keep all libraries above this line
 
 const generateRandomString = () => {
   const length = 6;
   return Math.random().toString(32).substr(2, length);
-}
+};
 
 const urlsForUser = (id) => {//fetch all urls saved for a user
-  let urls = {}; 
+  let urls = {};
   for (const url in urlDatabase) {
-    if (url.userID = id) {
-      urls[url] = url
+    if (url.userID === id) {
+      urls[url] = url;
     }
   }
 
   return urls;
-}
+};
 //keep helper functions above this line
 
 app.set("view engine", "ejs");
@@ -57,11 +57,11 @@ app.post("/login", (req, res) => {//when pushing login button, if user matches k
   for (const user in users) {
     if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].hashedPassword)) {
       req.session.userID = `${user}`;
-      res.redirect("/urls")
+      res.redirect("/urls");
     }
   }
   
-  res.statusCode = 403
+  res.statusCode = 403;
   res.redirect("/login");
 });
 
@@ -98,13 +98,13 @@ app.post("/register", (req, res) => {//on button press, add user to database
 
   req.session.userID = userID;
   res.redirect("/urls");
-})
+});
 
 app.post("/urls", (req, res) => {//create a new url entry in the database
   const newURL = generateRandomString();
   urlDatabase[newURL] = req.body.longURL;
   
-  res.redirect(`/urls/${newURL}`)
+  res.redirect(`/urls/${newURL}`);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {//delete url entry from database
@@ -125,13 +125,13 @@ app.post("/urls/:shortURL/update", (req ,res) => {//updates the longURL belongin
     if (req.session.userID === user) {
       const shortURL = req.params.shortURL;
       urlDatabase[shortURL] = req.body.longURL;
-      res.redirect(`/urls/${shortURL}`)
+      res.redirect(`/urls/${shortURL}`);
     }
   }
   
   const shortURL = req.params.shortURL;
-  res.redirect(`/urls/${shortURL}`)
-})
+  res.redirect(`/urls/${shortURL}`);
+});
 //keep all POST requests above this line
 
 app.get("/", (req, res) => {//check if server works
@@ -139,12 +139,12 @@ app.get("/", (req, res) => {//check if server works
 });
 
 app.get("/login", (req, res) => {//get login form page
-  const templateVars = { 
+  const templateVars = {
     user: users[req.session.userID]
   };
 
   res.render("login", templateVars);
-})
+});
 
 app.get("/urls.json", (req, res) => {//json file for users urls
   res.json(urlDatabase);
@@ -153,29 +153,29 @@ app.get("/urls.json", (req, res) => {//json file for users urls
 app.get("/urls", (req,res) => {// get list of urls for logged in user
   for (const user in users) {
     if (req.session.userID === user) {
-      const templateVars = { 
+      const templateVars = {
         urls: urlsForUser(req.session.userID),
         user: users[req.session.userID]
       };
-      return res.render("urls_index", templateVars)
+      return res.render("urls_index", templateVars);
     }
   }
 
   const templateVars = {
     urls: null,
     user: null
-  }
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req,res) => {//get page for creating new url
-  const templateVars = { 
+  const templateVars = {
     user: users[req.session.userID]
   };
 
   if (!templateVars.user) {
     res.redirect("/login");
-  } 
+  }
 
 
   res.render("urls_new", templateVars);
@@ -187,27 +187,27 @@ app.get("/u/:shortURL", (req, res) => {//redirect to long url value for short ur
   if (shortURL) {
     return res.redirect(`https://${longURL}`);
   }
-})
+});
 
 app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
   for (const user in users) {
     if (req.session.userID === user) {
       const templateVars = {
-        shortURL: req.params.shortURL, 
+        shortURL: req.params.shortURL,
         longURL: urlDatabase[req.params.shortURL].longURL,
         user: users[req.session.userID]
-      }
+      };
     
       return res.render("urls_show", templateVars);
     } else {
-      res.redirect("/login")
+      res.redirect("/login");
     }
   }
   
   const templateVars = {
     shortURL: "Please Log In First",
     longURL:null
-  }
+  };
 
   res.render("urls_show", templateVars);
 });
@@ -215,13 +215,13 @@ app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
 app.get("/register", (req,res) => {//get register form page
   const templateVars = {
     user: users[req.session.userID]
-  }
+  };
 
   res.render("register", templateVars);
-})
+});
 
 app.get("/hello", (req, res) => {//test page
-  res.send("<html>Hello <b>World</b></html>\n")
+  res.send("<html>Hello <b>World</b></html>\n");
 });
 
 //keep all GET requests above this line
@@ -229,6 +229,6 @@ app.get("/hello", (req, res) => {//test page
 
 
 
-app.listen(PORT, () => {//have server listen 
+app.listen(PORT, () => {//have server listen
   console.log(`Server is listening on Port ${PORT}`);
-})
+});
