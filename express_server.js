@@ -79,13 +79,13 @@ app.post("/register", (req, res) => {//on button press, add user to database
 
   if (!inputEmail || !password) {
     res.statusCode = 400;
-    return res.redirect("/register");
+    res.send("Please enter an e-mail")
   }
   
   for (let user in users) {
     if (inputEmail === users[user].email) {
       res.statusCode = 400;
-      return res.redirect("/register");
+      res.send("Please enter a password")
     }
   }
 
