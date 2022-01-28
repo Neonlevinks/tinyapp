@@ -103,6 +103,8 @@ app.post("/register", (req, res) => {//on button press, add user to database
 app.post("/urls", (req, res) => {//create a new url entry in the database
   const newURL = generateRandomString();
   urlDatabase[newURL] = req.body.longURL;
+  console.log(urlDatabase);
+  console.log(newURL);
   
   res.redirect(`/urls/${newURL}`);
 });
@@ -199,8 +201,6 @@ app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
       };
     
       return res.render("urls_show", templateVars);
-    } else {
-      res.redirect("/login");
     }
   }
   
