@@ -8,16 +8,16 @@ Home page for users who are not logged in shows an error message while directing
 
 !["login page"](/screenshots/Home_Not_LoggedIn.png)
 
-You must be registered to log in, so press register and enter an email or password. Registing will sign you in. 
+You must be registered to log in, so press register and enter an email or password. Registering will sign you in. 
 !["register page"](/screenshots/Register.png)
 
 Once logged in, you can navigate to the Create New URL page to shorten a url of your choice.
 
 !["create page"](/screenshots/create.png)
 
+Once created, you will immeadiately be taken to the short url page, where you can update your long url if you like. 
 
-
-!["login page"](#)
+!["short url page"](/screenshots/short.png)
 
 !["register page"](#)
 
