@@ -39,9 +39,10 @@ const generateRandomString = () => {
 
 const urlsForUser = (id) => {//fetch all urls saved for a user
   let urls = {};
-  for (const url in urlDatabase) {
+  for (const shortURL in urlDatabase) {
+    const url = urlDatabase[shortURL];
     if (url.userID === id) {
-      urls[url] = url;
+      urls[shortURL] = url.longURL;
     }
   }
 
@@ -76,18 +77,42 @@ app.post("/register", (req, res) => {//on button press, add user to database
   const inputEmail = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
+  console.log("email", inputEmail);
+  console.log("password", password);
+  console.log(users);
 
-  if (!inputEmail || !password) {
+  if (!inputEmail) {
     res.statusCode = 400;
-    res.send("Please enter an e-mail")
+    const templateVars = {
+      user: null,
+      error: "Please enter an email"
+    }
+
+    res.render("register", templateVars)
   }
   
-  for (let user in users) {
-    if (inputEmail === users[user].email) {
+  if (!password) {
+    res.statusCode = 400;
+    const templateVars = {
+      user: null,
+      error: "Please enter a password"
+    }
+
+    res.render("register", templateVars)
+  }
+
+  for (let entry in users) {
+    if (users[entry].email === inputEmail) {
       res.statusCode = 400;
-      res.send("Please enter a password")
+      const templateVars = {
+        user: null,
+        error: "You are already registered, please login instead"
+      }
+  
+      return res.render("register", templateVars)
     }
   }
+  
 
   users[userID] = {
     id: userID,
@@ -102,9 +127,10 @@ app.post("/register", (req, res) => {//on button press, add user to database
 
 app.post("/urls", (req, res) => {//create a new url entry in the database
   const newURL = generateRandomString();
-  urlDatabase[newURL] = req.body.longURL;
-  console.log(urlDatabase);
-  console.log(newURL);
+  urlDatabase[newURL] = {
+    longURL: req.body.longURL,
+    userID: req.session.userID
+  }
   
   res.redirect(`/urls/${newURL}`);
 });
@@ -164,10 +190,10 @@ app.get("/urls", (req,res) => {// get list of urls for logged in user
   }
 
   const templateVars = {
-    urls: null,
+    error: "Please log in first",
     user: null
-  };
-  res.render("urls_index", templateVars);
+  }
+  res.render("login", templateVars);
 });
 
 app.get("/urls/new", (req,res) => {//get page for creating new url
@@ -213,11 +239,22 @@ app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
 });
 
 app.get("/register", (req,res) => {//get register form page
-  const templateVars = {
-    user: users[req.session.userID]
-  };
 
-  res.render("register", templateVars);
+  for (const user in users) {
+    if (users[user].email !== req.body.email){
+      const templateVars = {
+        user: users[req.session.userID]
+      };
+      return res.render("register", templateVars);
+    }
+  }
+  
+  const templateVars = {
+    user: null,
+    error: 'You are not registered'
+  }
+
+  return res.render("register", templateVars);
 });
 
 app.get("/hello", (req, res) => {//test page

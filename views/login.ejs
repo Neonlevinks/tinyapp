@@ -9,7 +9,10 @@
 <body>
   <%- include("partials/_header"); %>
 
-
+  <% if (locals.error) {%>
+    <h2><%=error%></h2>
+  <% } %>
+  
   <div class="card text-center">
     <h2 class="form-inline">Please Log In</h2>
     <form class="form-inline" action="/login" method="POST">

@@ -10,7 +10,10 @@
 <body>
   <%- include("partials/_header"); %>
 
-
+  <% if (locals.error) {%>
+    <h2><%=error%></h2>
+  <% } %>
+  
   <div class="card text-center">
     <div class="card-header"></div>
 
