@@ -8,15 +8,12 @@ Home page for users who are not logged in shows an error message while directing
 
 !["login page"](/screenshots/Home_Not_LoggedIn.png)
 
-You must be registered to log in, so press register and enter an email or password.
+You must be registered to log in, so press register and enter an email or password. Registing will sign you in. 
 !["register page"](/screenshots/Register.png)
 
-With no e-mail you will get the following error:
-!["register page no email"](/screenshots/register_no_email.png)
+Once logged in, you can navigate to the Create New URL page to shorten a url of your choice.
 
-
-!["no email "]
-!["home page"]
+!["create page"](/screenshots/create.png)
 
 
 

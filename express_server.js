@@ -77,9 +77,7 @@ app.post("/register", (req, res) => {//on button press, add user to database
   const inputEmail = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
-  console.log("email", inputEmail);
-  console.log("password", password);
-  console.log(users);
+
 
   if (!inputEmail) {
     res.statusCode = 400;
@@ -149,15 +147,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {//delete url entry from databa
 });
 
 app.post("/urls/:shortURL/update", (req ,res) => {//updates the longURL belonging to a shortURL
-  for (const user in users) {
-    if (req.session.userID === user) {
-      const shortURL = req.params.shortURL;
-      urlDatabase[shortURL] = req.body.longURL;
-      res.redirect(`/urls/${shortURL}`);
-    }
-  }
   
+
   const shortURL = req.params.shortURL;
+  urlDatabase[shortURL].longURL = req.body.longURL;
+  
   res.redirect(`/urls/${shortURL}`);
 });
 //keep all POST requests above this line
@@ -211,31 +205,28 @@ app.get("/urls/new", (req,res) => {//get page for creating new url
 
 app.get("/u/:shortURL", (req, res) => {//redirect to long url value for short url key
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  if (shortURL) {
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL;
     return res.redirect(`https://${longURL}`);
   }
+
+  res.status(400).send("This shortURL does not exist")
 });
 
 app.get("/urls/:shortURL", (req, res) => {// show edit page for short url
-  for (const user in users) {
-    if (req.session.userID === user) {
-      const templateVars = {
-        shortURL: req.params.shortURL,
-        longURL: urlDatabase[req.params.shortURL].longURL,
-        user: users[req.session.userID]
-      };
-    
-      return res.render("urls_show", templateVars);
+  // for (const user in users) {
+  if (req.session.userID === urlDatabase[req.params.shortURL].userID) {
+    const templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user: users[req.session.userID]
+    };
+     
+    return res.render("urls_show", templateVars);
     }
-  }
   
-  const templateVars = {
-    shortURL: "Please Log In First",
-    longURL:null
-  };
-
-  res.render("urls_show", templateVars);
+  
+  res.status(400).send("You are not authorized to view this page");
 });
 
 app.get("/register", (req,res) => {//get register form page
