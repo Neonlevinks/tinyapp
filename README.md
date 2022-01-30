@@ -6,11 +6,15 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 Home page for users who are not logged in shows an error message while directing to login page.
 
-!["login page"](#/screenshots/Home_Not_LoggedIn.png)
+!["login page"](/screenshots/Home_Not_LoggedIn.png)
 
-You must be registered to log in, so press register and enter an email or password, otherwise you will get one of the following errors.
+You must be registered to log in, so press register and enter an email or password.
+!["register page"](/screenshots/Register.png)
 
-!["register page"](#/screenshots/Register.png)
+With no e-mail you will get the following error:
+!["register page no email"](/screenshots/register_no_email.png)
+
+
 !["no email "]
 !["home page"]
 
